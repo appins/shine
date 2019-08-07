@@ -86,7 +86,7 @@ func disp(fileData []byte) error {
 
 				list.Rows = shown
 			case "command", "run":
-				//command(action.Data)
+				command(action.Data)
 			case "exit":
 				return nil
 			}
