@@ -16,12 +16,40 @@ func main() {
 			os.Exit(1)
 		}
 
-		// Display menu
+		// Display shinefile
 		err = disp(dat)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
 
+	} else if len(args) == 1 {
+		// Check if the argument is a known option
+		switch args[0] {
+		case "--create", "-c":
+
+		case "--help", "-h":
+
+		default:
+			// Check if the argument is an unknown option
+			if args[0][0] == '-' {
+				fmt.Fprintln(os.Stderr, args[0], "is an unrecognized option")
+				os.Exit(1)
+			}
+
+			// Otherwise, assume it's a filename
+			dat, err := ioutil.ReadFile(args[0])
+			if err != nil {
+				fmt.Fprintln(os.Stderr, args[0], "is not a valid shinefile")
+				os.Exit(1)
+			}
+
+			// Display shinefile
+			err = disp(dat)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+			}
+
+		}
 	}
 
 }
