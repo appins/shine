@@ -26,9 +26,12 @@ func main() {
 		// Check if the argument is a known option
 		switch args[0] {
 		case "--create", "-c":
-
+			err := create("shinefile")
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+			}
 		case "--help", "-h":
-
+			help("shine")
 		default:
 			// Check if the argument is an unknown option
 			if args[0][0] == '-' {
