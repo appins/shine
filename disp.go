@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"time"
 
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
@@ -97,4 +98,66 @@ func disp(fileData []byte) error {
 	}
 
 	return nil
+}
+
+// Ask a user a specific question
+func prompt(question string) (string, error) {
+	// Setup termui
+	if err := ui.Init(); err != nil {
+		return "", errors.New("Erorr with termui init")
+	}
+	defer ui.Close()
+
+	width, height := ui.TerminalDimensions()
+
+	// Create
+	para := widgets.NewParagraph()
+	para.SetRect(0, 0, width, height)
+	para.Text = question
+	ui.Render(para)
+
+	var cursorFlash bool
+	var editline string
+
+	uiEvents := ui.PollEvents()
+	ticker := time.NewTicker(time.Second / 8).C
+
+	for {
+		select {
+		case e := <-uiEvents:
+			switch e.ID {
+			case "<C-c>":
+				return "Default", nil
+			case "<Backspace>":
+				if len(editline) > 0 {
+					editline = editline[0 : len(editline)-1]
+				}
+			case "<Space>":
+				editline += " "
+			case "<Enter>":
+				return editline, nil
+			default:
+				if len(e.ID) == 1 {
+					editline += e.ID
+				}
+			}
+
+			if cursorFlash {
+				para.Text = question + editline + "_"
+			} else {
+				para.Text = question + editline
+			}
+
+			ui.Render(para)
+
+		case <-ticker:
+			cursorFlash = !cursorFlash
+			if cursorFlash {
+				para.Text = question + editline + "_"
+			} else {
+				para.Text = question + editline
+			}
+			ui.Render(para)
+		}
+	}
 }

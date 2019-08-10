@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"os"
 )
@@ -18,6 +19,22 @@ func create(filename string) error {
 		return err
 	}
 	defer fil.Close()
+
+	title, err := prompt("Title for this shinefile: ")
+	if err != nil {
+		return err
+	}
+
+	var shine fileFormat
+	shine.Metadata = map[string]string{"title": title}
+	shine.Steps = []step{step{"Exit", "root", "exit", ""}}
+
+	jdat, err := json.MarshalIndent(shine, "\n", "\t")
+	if err != nil {
+		return err
+	}
+
+	fil.Write(jdat)
 
 	return nil
 
