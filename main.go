@@ -22,16 +22,35 @@ func main() {
 			fmt.Fprintln(os.Stderr, err)
 		}
 
-	} else if len(args) == 1 {
+	} else if len(args) >= 1 {
 		// Check if the argument is a known option
 		switch args[0] {
 		case "--create", "-c":
-			err := create("shinefile")
+			var err error
+			if len(args) == 1 {
+				err = create("shinefile")
+			} else {
+				err = create(args[1])
+			}
 			if err != nil {
 				fmt.Fprintln(os.Stderr, err)
 			}
 		case "--help", "-h":
-			help("shine")
+			if len(args) == 1 {
+				help("shine")
+			} else {
+				help(args[1])
+			}
+		case "--edit", "-e":
+			var err error
+			if len(args) == 1 {
+				err = edit("shinefile")
+			} else {
+				err = edit(args[1])
+			}
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+			}
 		default:
 			// Check if the argument is an unknown option
 			if args[0][0] == '-' {
