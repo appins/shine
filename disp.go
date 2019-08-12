@@ -100,8 +100,6 @@ func disp(fileData []byte) error {
 		}
 		ui.Render(list)
 	}
-
-	return nil
 }
 
 // Ask a user a specific question
