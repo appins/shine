@@ -36,6 +36,6 @@ func create(filename string) error {
 
 	fil.Write(jdat)
 
-	return nil
+	return edit(filename)
 
 }
