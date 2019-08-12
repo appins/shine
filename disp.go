@@ -65,10 +65,13 @@ func disp(fileData []byte) error {
 		e := <-uiEvent
 		switch e.ID {
 		case "<Down>", "j":
+			// Go down a row
 			list.ScrollDown()
 		case "<Up>", "k":
+			// Go up a row
 			list.ScrollUp()
 		case "<Enter>":
+			// Do the selected entry
 			action := shine.Steps[ids[list.SelectedRow]]
 			switch action.Method {
 			// Handle method cd, which changes displayed elements
@@ -92,6 +95,7 @@ func disp(fileData []byte) error {
 				return nil
 			}
 		case "q", "<C-c>":
+			// Quit on control C or Q
 			return nil
 		}
 		ui.Render(list)
@@ -127,16 +131,21 @@ func prompt(question string) (string, error) {
 		case e := <-uiEvents:
 			switch e.ID {
 			case "<C-c>":
+				// Exit on control C
 				return "Default", nil
 			case "<Backspace>":
+				// Delete handling
 				if len(editline) > 0 {
 					editline = editline[0 : len(editline)-1]
 				}
 			case "<Space>":
+				// Add spaces to editline
 				editline += " "
 			case "<Enter>":
+				// Submit by returning when enter is pressed
 				return editline, nil
 			default:
+				// If it's one character long, treat it as a keystroke.
 				if len(e.ID) == 1 {
 					editline += e.ID
 				}
@@ -151,6 +160,7 @@ func prompt(question string) (string, error) {
 			ui.Render(para)
 
 		case <-ticker:
+			// Flash an underscore every tick
 			cursorFlash = !cursorFlash
 			if cursorFlash {
 				para.Text = question + editline + "_"
@@ -160,4 +170,44 @@ func prompt(question string) (string, error) {
 			ui.Render(para)
 		}
 	}
+}
+
+// Give the user several choices
+func multipleChoice(title string, rows []string) (int, error) {
+	// Setup termui
+	if err := ui.Init(); err != nil {
+		return -1, errors.New("Erorr with termui init")
+	}
+	defer ui.Close()
+
+	width, height := ui.TerminalDimensions()
+
+	// Create the list and populate it
+	list := widgets.NewList()
+	list.Title = title
+	list.SetRect(0, 0, width, height)
+	list.SelectedRowStyle = ui.NewStyle(ui.ColorBlack, ui.ColorWhite)
+	list.Rows = rows
+
+	ui.Render(list)
+
+	uiEvents := ui.PollEvents()
+
+	// Handle keyboard input
+	for {
+		e := <-uiEvents
+		switch e.ID {
+		case "<Down>", "j":
+			// Go down a row
+			list.ScrollDown()
+		case "<Up>", "k":
+			// Go up a row
+			list.ScrollUp()
+		case "<Enter>":
+			return list.SelectedRow, nil
+		case "<C-c>", "q":
+			return -1, nil
+		}
+	}
+
 }
