@@ -132,7 +132,7 @@ func prompt(question string) (string, error) {
 			switch e.ID {
 			case "<C-c>":
 				// Exit on control C
-				return "Default", nil
+				return "undefined", nil
 			case "<Backspace>":
 				// Delete handling
 				if len(editline) > 0 {
@@ -208,6 +208,7 @@ func multipleChoice(title string, rows []string) (int, error) {
 		case "<C-c>", "q":
 			return -1, nil
 		}
+		ui.Render(list)
 	}
 
 }
