@@ -23,7 +23,7 @@ func edit(filename string) error {
 	// Loop until terminated or returning error
 	var option int
 	for option != -1 {
-		option, err = multipleChoice("Edit file", []string{
+		option, _ = multipleChoice("Edit file", []string{
 			"Add a new row",
 			"Edit an existing row",
 			"Remove an existing row",
