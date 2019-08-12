@@ -27,7 +27,7 @@ func create(filename string) error {
 
 	var shine fileFormat
 	shine.Metadata = map[string]string{"title": title}
-	shine.Steps = []step{step{"Exit", "root", "exit", ""}}
+	shine.Steps = []step{{"Exit", "root", "exit", ""}}
 
 	jdat, err := json.MarshalIndent(shine, "\n", "\t")
 	if err != nil {
