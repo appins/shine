@@ -40,8 +40,11 @@ func edit(filename string) error {
 				continue
 			}
 			folder, _ := prompt("Folder for row (empty = root): ")
-			if folder == "undefined" {
+			if folder == "" {
 				folder = "root"
+			}
+			if folder == "undefined" {
+				continue
 			}
 			methodInt, _ := multipleChoice("Action", []string{
 				"Run a command",

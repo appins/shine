@@ -55,6 +55,7 @@ func disp(fileData []byte) error {
 	}
 
 	list.Rows = shown
+	scroll := map[string]int{}
 
 	ui.Render(list)
 
@@ -76,6 +77,8 @@ func disp(fileData []byte) error {
 			switch action.Method {
 			// Handle method cd, which changes displayed elements
 			case "cd":
+				// Store how far down the on the list you were
+				scroll[dir] = list.SelectedRow
 				dir = action.Data
 
 				ids = nil
@@ -88,7 +91,9 @@ func disp(fileData []byte) error {
 					}
 				}
 
+				list.ScrollTop()
 				list.Rows = shown
+				list.SelectedRow = scroll[dir]
 			case "command", "run":
 				command(action.Data)
 			case "exit":
@@ -186,6 +191,7 @@ func multipleChoice(title string, rows []string) (int, error) {
 	list.SetRect(0, 0, width, height)
 	list.SelectedRowStyle = ui.NewStyle(ui.ColorBlack, ui.ColorWhite)
 	list.Rows = rows
+	list.ScrollTop()
 
 	ui.Render(list)
 
