@@ -24,6 +24,9 @@ func create(filename string) error {
 	if err != nil {
 		return err
 	}
+	if title == "undefined" {
+		return nil
+	}
 
 	var shine fileFormat
 	shine.Metadata = map[string]string{"title": title}
