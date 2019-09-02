@@ -22,14 +22,15 @@ func edit(filename string) error {
 
 	// Loop until terminated or returning error
 	var option int
-	for option != -1 {
+	for {
 		option, _ = multipleChoice("Edit file", []string{
 			"Add a new row",
 			"Edit an existing row",
 			"Remove an existing row",
-			"Swap rows",
+			"Move a row",
 			"View rows",
 			"Save and exit",
+			"Exit without saving",
 		})
 		switch option {
 		// Add new row
@@ -67,6 +68,28 @@ func edit(filename string) error {
 
 			shine.Steps = append(shine.Steps, step{name, folder, method, data})
 
+		// Edit an existing row
+		case 1:
+			var rows []string
+			var steps []step
+			for _, j := range shine.Steps {
+				rows = append(rows, j.Folder+"/"+j.Text)
+				steps = append(steps, j)
+			}
+			chosen, _ := multipleChoice("Existing Rows", rows)
+			if chosen == -1 {
+				break
+			}
+
+			shine.Steps[chosen].edit()
+		// View rows
+		case 4:
+			var rows []string
+			for _, j := range shine.Steps {
+				rows = append(rows, j.Folder+"/"+j.Text+" - "+j.Method+" "+j.Data)
+			}
+			multipleChoice("Existing Rows", rows)
+
 		// Save and exit
 		case 5:
 			saveJson, err := json.MarshalIndent(shine, "\n", "\t")
@@ -75,6 +98,10 @@ func edit(filename string) error {
 			}
 
 			return ioutil.WriteFile(filename, saveJson, 0666)
+		// Exit without saving
+		case 6:
+			return nil
+
 		}
 
 	}
