@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/atotto/clipboard"
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
 )
@@ -90,6 +91,9 @@ func disp(fileData []byte) error {
 		case "q", "<C-c>":
 			// Quit on control C or Q
 			return nil
+		case "<Resize>":
+			width, height := ui.TerminalDimensions()
+			list.SetRect(0, 0, width, height)
 		}
 		ui.Render(list)
 	}
@@ -124,6 +128,10 @@ func prompt(question string) (string, error) {
 			case "<C-c>":
 				// Exit on control C
 				return "undefined", nil
+
+			case "<Resize>":
+				width, height := ui.TerminalDimensions()
+				para.SetRect(0, 0, width, height)
 			case "<Backspace>":
 				// Delete handling
 				if len(editline) > 0 {
@@ -135,6 +143,9 @@ func prompt(question string) (string, error) {
 			case "<Enter>":
 				// Submit by returning when enter is pressed
 				return editline, nil
+			case "<MouseMiddle>", "<C-v>":
+				paste, _ := clipboard.ReadAll()
+				editline += paste
 			default:
 				// If it's one character long, treat it as a keystroke.
 				if len(e.ID) == 1 {
@@ -199,6 +210,9 @@ func multipleChoice(title string, rows []string) (int, error) {
 			return list.SelectedRow, nil
 		case "<C-c>", "q":
 			return -1, nil
+		case "<Resize>":
+			width, height := ui.TerminalDimensions()
+			list.SetRect(0, 0, width, height)
 		}
 		ui.Render(list)
 	}
