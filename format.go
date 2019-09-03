@@ -8,7 +8,7 @@ type step struct {
 }
 
 // Edit dialogue
-func (st *step) edit() {
+func (st *step) Edit() {
 	option, _ := multipleChoice("What field would you like to change", []string{
 		"Name of step",
 		"Containing folder",
@@ -38,7 +38,7 @@ func (st *step) edit() {
 	case 2:
 		methodInt, _ := multipleChoice("Method", []string{
 			"Run a command",
-			"Change Folder",
+			"Change folder",
 			"Exit the shinefile",
 		})
 
@@ -59,6 +59,47 @@ func (st *step) edit() {
 		st.Method = method
 		st.Data = data
 	}
+}
+
+// Create dialoge, returns true if successful
+func (st *step) Create() bool {
+	name, _ := prompt("Name for step: ")
+	if name == "undefined" {
+		return false
+	}
+
+	folder, _ := prompt("Containing folder (leave blank for root): ")
+	if folder == "" {
+		folder = "root"
+	}
+	if folder == "undefined" {
+		return false
+	}
+
+	methodInt, _ := multipleChoice("Step's action", []string{
+		"Run a command",
+		"Change folder",
+		"Exit the shinefile",
+	})
+
+	if methodInt == -1 {
+		return false
+	}
+
+	// Get the method (string) from the selected option (int)
+	method := []string{"run", "cd", "exit"}[methodInt]
+
+	var data string
+	switch method {
+	case "run":
+		data, _ = prompt("Command to run: ")
+	case "cd":
+		data, _ = prompt("Folder to open: ")
+	}
+
+	*st = step{name, folder, method, data}
+	return true
+
 }
 
 type fileFormat struct {

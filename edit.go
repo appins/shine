@@ -35,38 +35,11 @@ func edit(filename string) error {
 		switch option {
 		// Add new row
 		case 0:
-			// Get name, folder, type of row, and data
-			name, _ := prompt("Name for row: ")
-			if name == "undefined" {
-				continue
+			var st step
+			ok := st.Create()
+			if ok {
+				shine.Steps = append(shine.Steps, st)
 			}
-			folder, _ := prompt("Folder for row (empty = root): ")
-			if folder == "" {
-				folder = "root"
-			}
-			if folder == "undefined" {
-				continue
-			}
-			methodInt, _ := multipleChoice("Action", []string{
-				"Run a command",
-				"Change folders",
-				"Exit the shinefile",
-			})
-			if methodInt == -1 {
-				continue
-			}
-			// Convert the list choice into the right method
-			method := []string{"run", "cd", "exit"}[methodInt]
-
-			var data string
-			switch method {
-			case "cd":
-				data, _ = prompt("Folder to open: ")
-			case "run":
-				data, _ = prompt("Command to run: ")
-			}
-
-			shine.Steps = append(shine.Steps, step{name, folder, method, data})
 
 		// Edit an existing row
 		case 1:
@@ -81,7 +54,7 @@ func edit(filename string) error {
 				break
 			}
 
-			shine.Steps[chosen].edit()
+			shine.Steps[chosen].Edit()
 		// View rows
 		case 4:
 			var rows []string
