@@ -55,6 +55,25 @@ func edit(filename string) error {
 			}
 
 			shine.Steps[chosen].Edit()
+		// Delete a row
+		case 2:
+			var rows []string
+			var steps []step
+			for _, j := range shine.Steps {
+				rows = append(rows, j.Folder+"/"+j.Text)
+				steps = append(steps, j)
+			}
+			chosen, _ := multipleChoice("Existing Rows", rows)
+			if chosen == -1 {
+				break
+			}
+
+			confirm, _ := prompt(rows[chosen] + `
+				[You're sure you want to delete this row?](fg:red) [y/N]: `)
+			if confirm == "y" || confirm == "Y" || confirm == "yes" {
+				shine.Steps = append(shine.Steps[0:chosen], shine.Steps[chosen+1:len(shine.Steps)]...)
+			}
+
 		// View rows
 		case 4:
 			var rows []string
@@ -62,7 +81,6 @@ func edit(filename string) error {
 				rows = append(rows, j.Folder+"/"+j.Text+" - "+j.Method+" "+j.Data)
 			}
 			multipleChoice("Existing Rows", rows)
-
 		// Save and exit
 		case 5:
 			saveJson, err := json.MarshalIndent(shine, "\n", "\t")
